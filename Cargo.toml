@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = ["proto", "server", "core"]
+exclude = ["app/src-tauri"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["The Picture House"]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true

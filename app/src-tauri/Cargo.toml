@@ -1,0 +1,25 @@
+[package]
+name = "tph-netcheck"
+version = "0.1.0"
+description = "TPH Net Check: finds out why Neptune feels slow"
+authors = ["The Picture House"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+netcheck-core = { path = "../../core" }
+keyring = { version = "3", features = ["apple-native", "windows-native"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+# Kept out of the root workspace so the core can be built without WebView libraries.
+[workspace]

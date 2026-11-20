@@ -1,0 +1,10 @@
+[package]
+name = "tph-netcheck-server"
+description = "Small helper that runs on Neptune for TPH Net Check: NAS load stats and a throughput test endpoint"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+netcheck-proto = { path = "../proto" }
+serde_json = "1"
+libc = "0.2"

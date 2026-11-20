@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TPH Net Check</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div>
+        <div class="brand-name">Net Check</div>
+        <div class="brand-sub">The Picture House</div>
+      </div>
+    </div>
+    <nav>
+      <button class="nav active" data-view="diagnose">Diagnose</button>
+      <button class="nav" data-view="history">History</button>
+      <button class="nav" data-view="isolation">Isolation</button>
+      <button class="nav" data-view="settings">Settings</button>
+    </nav>
+    <div class="rail-foot" id="machine"></div>
+  </aside>
+
+  <main>
+    <!-- Diagnose -->
+    <section class="view active" id="view-diagnose">
+      <header class="view-head">
+        <div>
+          <h1>Why is Neptune slow?</h1>
+          <p class="lede">Run this while it feels slow. It tests your link, the switches, the network, Neptune and file sharing, then tells you which one is the problem. Takes about a minute.</p>
+        </div>
+        <button class="primary" id="run">Run check</button>
+      </header>
+
+      <div class="notice" id="setup-notice" hidden></div>
+
+      <div class="verdict" id="verdict" hidden>
+        <div class="verdict-area" id="verdict-area"></div>
+        <h2 id="verdict-title"></h2>
+        <p id="verdict-detail"></p>
+        <div class="verdict-meta" id="verdict-meta"></div>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h3>Steps</h3>
+          <ol class="steps" id="steps"></ol>
+        </div>
+        <div class="panel">
+          <h3>Key numbers</h3>
+          <div class="tiles" id="tiles"><p class="muted">Run a check to see results.</p></div>
+        </div>
+      </div>
+
+      <div class="panel" id="findings-panel" hidden>
+        <h3>Evidence</h3>
+        <ul class="findings" id="findings"></ul>
+      </div>
+
+      <details class="panel raw" id="raw-panel" hidden>
+        <summary>Raw data</summary>
+        <pre id="raw"></pre>
+      </details>
+    </section>
+
+    <!-- History -->
+    <section class="view" id="view-history">
+      <header class="view-head">
+        <div>
+          <h1>History</h1>
+          <p class="lede">Past checks from this machine. Compare a slow day with a normal one. Click a row to open it.</p>
+        </div>
+      </header>
+      <div class="panel">
+        <table class="table" id="history">
+          <thead><tr><th>When</th><th>Verdict</th><th>Link</th><th>Network down / up</th><th>File write / read</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Isolation -->
+    <section class="view" id="view-isolation">
+      <header class="view-head">
+        <div>
+          <h1>Isolation check</h1>
+          <p class="lede">Lists every device this machine can reach on its network. If your VLAN is properly separated, you should only see your own kit: the machines, Neptune, Saturn, the switches and the gateway.</p>
+        </div>
+        <button class="primary" id="scan">Scan network</button>
+      </header>
+      <div class="verdict" id="scan-verdict" hidden>
+        <div class="verdict-area">Isolation</div>
+        <h2 id="scan-title"></h2>
+        <p id="scan-detail"></p>
+      </div>
+      <div class="panel" id="scan-panel" hidden>
+        <h3 id="scan-head">Devices</h3>
+        <table class="table" id="scan-table">
+          <thead><tr><th>Address</th><th>Hardware address</th><th>Device</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section class="view" id="view-settings">
+      <header class="view-head">
+        <div>
+          <h1>Settings</h1>
+          <p class="lede">Saved on this machine only. The UniFi password is kept in the system keychain, never in a file.</p>
+        </div>
+        <button class="primary" id="save">Save</button>
+      </header>
+
+      <form id="settings-form" autocomplete="off">
+        <div class="panel">
+          <h3>Neptune</h3>
+          <div class="fields">
+            <label>Address<input name="neptune_host" placeholder="192.168.x.x"><small>Neptune's IP address. An address is more reliable than a name.</small></label>
+            <label>SSH user<input name="ssh_user"></label>
+            <label>SSH port<input name="ssh_port" type="number" min="1" max="65535"></label>
+            <label class="wide">Test server location on Neptune<input name="server_path"><small>Where tph-netcheck-server was copied, as Neptune sees it.</small></label>
+            <label>Speed test port<input name="test_port" type="number" min="1024" max="65535"></label>
+          </div>
+          <div class="keybox">
+            <div><strong>SSH key</strong> <span id="key-status" class="pill"></span></div>
+            <textarea id="key-text" rows="4" placeholder="Paste the private key here, including the BEGIN and END lines"></textarea>
+            <div class="row">
+              <button type="button" id="key-import">Import key</button>
+              <button type="button" class="ghost" id="key-remove">Remove key</button>
+              <button type="button" class="ghost" id="test-neptune">Test Neptune</button>
+            </div>
+            <pre class="result" id="neptune-result" hidden></pre>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>File transfer test</h3>
+          <div class="fields">
+            <label class="wide">Test folder on the Neptune share<input name="smb_test_dir" id="smb-dir"><small id="smb-hint"></small></label>
+            <label>Test file size
+              <select name="smb_test_size_mb">
+                <option value="1024">1 GB (quick)</option>
+                <option value="2048">2 GB (default)</option>
+                <option value="4096">4 GB</option>
+                <option value="8192">8 GB (most honest)</option>
+              </select>
+              <small>Larger files give truer figures but take longer.</small>
+            </label>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Network speed test</h3>
+          <div class="fields">
+            <label>Seconds per direction<input name="throughput_seconds" type="number" min="3" max="30"></label>
+            <label>Parallel streams<input name="throughput_streams" type="number" min="1" max="16"></label>
+            <label>Expected link speed (Mb/s)<input name="expected_link_mbps" type="number" min="100"></label>
+            <label>Internet test address<input name="internet_target"></label>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>UniFi controller</h3>
+          <div class="fields">
+            <label class="wide">Controller address<input name="unifi_url" placeholder="https://192.168.x.x:8443"><small>The Dell laptop running UniFi Network.</small></label>
+            <label>Site<input name="unifi_site"></label>
+            <label>Read-only user<input name="unifi_user"></label>
+            <label>Password<input id="unifi-password" type="password" placeholder="unchanged"><small id="pw-status"></small></label>
+            <label class="check"><input name="unifi_insecure_tls" type="checkbox"> Accept the controller's self-signed certificate</label>
+          </div>
+          <div class="row">
+            <button type="button" class="ghost" id="test-unifi">Test UniFi</button>
+          </div>
+          <pre class="result" id="unifi-result" hidden></pre>
+        </div>
+
+        <div class="panel">
+          <h3>Known devices</h3>
+          <p class="muted">Used by the isolation check. One per line: name, then a hardware address or an IP address.</p>
+          <textarea id="known" rows="7" placeholder="Saturn, 00:11:32:aa:bb:cc&#10;Dan's PC, 192.168.10.41"></textarea>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
