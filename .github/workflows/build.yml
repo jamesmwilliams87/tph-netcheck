@@ -28,7 +28,7 @@ jobs:
       - name: Build static binaries
         run: |
           mkdir -p dist
-          for t in armv7-unknown-linux-musleabihf x86_64-unknown-linux-musl aarch64-unknown-linux-musl; do
+          for t in armv7-unknown-linux-musleabihf x86_64-unknown-linux-musl; do
             cross build --release -p tph-netcheck-server --target $t
             cp target/$t/release/tph-netcheck-server dist/tph-netcheck-server-$t
           done
