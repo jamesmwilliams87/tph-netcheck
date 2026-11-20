@@ -129,7 +129,7 @@ pub fn compare(a: &Snapshot, b: &Snapshot, full: bool) -> ServerSample {
 
 fn clock_ticks() -> i64 {
     // SAFETY: sysconf has no preconditions.
-    let v = unsafe { libc::sysconf(libc::_SC_CLK_TCK) };
+    let v = unsafe { libc::sysconf(libc::_SC_CLK_TCK) } as i64;
     if v > 0 { v } else { 100 }
 }
 
