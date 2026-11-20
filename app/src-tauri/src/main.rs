@@ -236,6 +236,7 @@ fn load_history(app: AppHandle, id: String) -> Result<Report, String> {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .manage(Busy(AtomicBool::new(false)))
         .invoke_handler(tauri::generate_handler![
             get_settings,

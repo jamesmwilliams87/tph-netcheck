@@ -188,7 +188,44 @@ pub fn check_dir(dir: &str) -> Result<PathBuf, String> {
         }
         fs::create_dir_all(&p).map_err(|e| format!("Could not create {}: {e}", p.display()))?;
     }
+    if is_network(&p) == Some(false) {
+        return Err(format!(
+            "{} is on this computer, not on Neptune. Choose a folder on the Neptune share in Settings.",
+            p.display()
+        ));
+    }
     Ok(p)
+}
+
+/// Some(true) if the folder is on a network share, Some(false) if it is on a
+/// local disk, None if this platform cannot tell.
+#[cfg(target_os = "macos")]
+pub fn is_network(p: &Path) -> Option<bool> {
+    use std::os::unix::ffi::OsStrExt;
+    let c = std::ffi::CString::new(p.as_os_str().as_bytes()).ok()?;
+    // SAFETY: statfs fills the zeroed struct; c is a valid C string.
+    let mut st: libc::statfs = unsafe { std::mem::zeroed() };
+    if unsafe { libc::statfs(c.as_ptr(), &mut st) } != 0 {
+        return None;
+    }
+    let name: String = st.f_fstypename.iter().take_while(|c| **c != 0).map(|c| *c as u8 as char).collect();
+    Some(matches!(name.as_str(), "smbfs" | "afpfs" | "nfs" | "webdav"))
+}
+
+#[cfg(windows)]
+pub fn is_network(p: &Path) -> Option<bool> {
+    let s = p.to_string_lossy();
+    if s.starts_with("\\\\") {
+        return Some(true);
+    }
+    let letter = s.chars().next().filter(|c| c.is_ascii_alphabetic() && s.chars().nth(1) == Some(':'))?;
+    let root = crate::sys::powershell(&format!("(Get-PSDrive -Name {letter} -ErrorAction SilentlyContinue).DisplayRoot")).ok()?;
+    Some(root.trim().starts_with("\\\\"))
+}
+
+#[cfg(all(unix, not(target_os = "macos")))]
+pub fn is_network(_p: &Path) -> Option<bool> {
+    None
 }
 
 #[cfg(test)]

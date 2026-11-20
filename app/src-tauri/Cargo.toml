@@ -1,6 +1,6 @@
 [package]
 name = "tph-netcheck"
-version = "0.1.1"
+version = "0.1.2"
 description = "TPH Net Check: finds out why Neptune feels slow"
 authors = ["The Picture House"]
 edition = "2021"
@@ -13,6 +13,7 @@ tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 netcheck-core = { path = "../../core" }
+tauri-plugin-dialog = "2"
 keyring = { version = "3", features = ["apple-native", "windows-native"] }
 
 [profile.release]

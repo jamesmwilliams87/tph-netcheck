@@ -233,8 +233,8 @@ async function loadSettings() {
   $("#pw-status").textContent = settingsView.has_unifi_password ? "Stored in the keychain. Leave blank to keep it." : "Not stored yet.";
   const mac = settingsView.os.startsWith("macos");
   $("#smb-hint").textContent = mac
-    ? "With the share mounted in Finder, for example /Volumes/Projects/_netcheck"
-    : "For example Z:\\_netcheck or \\\\192.168.x.x\\Projects\\_netcheck";
+    ? "Click Choose and pick a folder on the Neptune share, for example /Volumes/Projects/_netcheck"
+    : "Click Choose and pick a folder on the Neptune drive, for example Z:\\_netcheck";
   $("#machine").textContent = settingsView.machine;
   updateNotice();
 }
@@ -317,6 +317,12 @@ $("#test-neptune").addEventListener("click", (e) =>
   runTest(e.target, $("#neptune-result"), "test_neptune", (r) => `Connected to ${r.hostname}: ${r.cores} cores, ${r.mem_total_mb} MB RAM\n${r.interfaces.join("\n")}`)
 );
 $("#test-unifi").addEventListener("click", (e) => runTest(e.target, $("#unifi-result"), "test_unifi", (r) => r));
+
+$("#smb-choose").addEventListener("click", async () => {
+  if (!T || !T.dialog) return toast("Folder picker not available", true);
+  const dir = await T.dialog.open({ directory: true, multiple: false, title: "Choose a folder on the Neptune share" });
+  if (dir) $("#smb-dir").value = dir;
+});
 
 // ---------- Start ----------
 renderSteps();

@@ -180,6 +180,8 @@ input, select, textarea {
 input[type=checkbox] { width: auto; }
 textarea { font-family: var(--mono); font-size: 12px; resize: vertical; }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--amber); }
+.inline { display: flex; gap: 8px; }
+.inline input { flex: 1; }
 .keybox { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
 .pill { font-size: 12px; padding: 2px 8px; border-radius: 99px; background: var(--panel-2); color: var(--muted); margin-left: 6px; }

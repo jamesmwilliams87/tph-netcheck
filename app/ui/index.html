@@ -140,7 +140,9 @@
         <div class="panel">
           <h3>File transfer test</h3>
           <div class="fields">
-            <label class="wide">Test folder on the Neptune share<input name="smb_test_dir" id="smb-dir"><small id="smb-hint"></small></label>
+            <label class="wide">Test folder on the Neptune share
+              <div class="inline"><input name="smb_test_dir" id="smb-dir"><button type="button" id="smb-choose">Choose…</button></div>
+              <small id="smb-hint"></small></label>
             <label>Test file size
               <select name="smb_test_size_mb">
                 <option value="1024">1 GB (quick)</option>
