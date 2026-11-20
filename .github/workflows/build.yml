@@ -22,14 +22,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@v2
         with:
-          targets: armv7-unknown-linux-musleabihf,x86_64-unknown-linux-musl,aarch64-unknown-linux-musl
-      - run: pip install ziglang cargo-zigbuild
+          tool: cross
       - name: Build static binaries
         run: |
           mkdir -p dist
           for t in armv7-unknown-linux-musleabihf x86_64-unknown-linux-musl aarch64-unknown-linux-musl; do
-            cargo zigbuild --release -p tph-netcheck-server --target $t
+            cross build --release -p tph-netcheck-server --target $t
             cp target/$t/release/tph-netcheck-server dist/tph-netcheck-server-$t
           done
           file dist/*
