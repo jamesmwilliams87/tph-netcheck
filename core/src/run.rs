@@ -76,7 +76,7 @@ pub fn diagnose(s: &Settings, emit: &(dyn Fn(Event) + Sync)) -> Report {
             None
         }
         None => {
-            steps.finish("link", StepState::Failed, format!("Could not resolve {}", s.neptune_host));
+            steps.finish("link", StepState::Failed, format!("Could not find Neptune on the network as '{}'. Try its IP address in Settings.", s.neptune_host));
             None
         }
         Some(ip) => steps.result("link", link::detect(ip), |l| {

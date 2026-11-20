@@ -31,7 +31,8 @@ fn spawn(s: &Settings, args: &str) -> Result<Remote, String> {
         return Err("The server path on Neptune can only contain letters, numbers, / . _ -".into());
     }
     let program = if cfg!(windows) { "ssh.exe" } else { "ssh" };
-    let target = format!("{}@{}", s.ssh_user, s.neptune_host);
+    let host = sys::resolve_ipv4(&s.neptune_host).ok_or_else(|| format!("Could not find Neptune on the network as '{}'", s.neptune_host))?;
+    let target = format!("{}@{}", s.ssh_user, host);
     let remote_cmd = format!("{} {}", s.server_path, args);
     let mut child = sys::command(program)
         .args([

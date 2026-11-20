@@ -2127,7 +2127,7 @@ dependencies = [
 
 [[package]]
 name = "netcheck-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "gethostname",
  "libc",
@@ -2139,7 +2139,7 @@ dependencies = [
 
 [[package]]
 name = "netcheck-proto"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde",
 ]
@@ -4191,7 +4191,7 @@ checksum = "8df9b6e13f2d32c91b9bd719c00d1958837bc7dec474d94952798cc8e69eeec3"
 
 [[package]]
 name = "tph-netcheck"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "keyring",
  "netcheck-core",

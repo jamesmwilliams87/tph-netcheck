@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Settings {
-    /// Neptune's IP address or hostname.
+    /// Neptune's name or IP address. A bare name also tries name.local.
     pub neptune_host: String,
     pub ssh_user: String,
     pub ssh_port: u16,
@@ -46,7 +46,7 @@ pub struct KnownDevice {
 impl Default for Settings {
     fn default() -> Self {
         Settings {
-            neptune_host: String::new(),
+            neptune_host: "Neptune".into(),
             ssh_user: "netcheck".into(),
             ssh_port: 22,
             ssh_key_path: String::new(),

@@ -40,6 +40,9 @@ fn load_settings(app: &AppHandle) -> Result<Settings, String> {
         .ok()
         .and_then(|t| serde_json::from_str(&t).ok())
         .unwrap_or_default();
+    if s.neptune_host.trim().is_empty() {
+        s.neptune_host = "Neptune".into();
+    }
     let k = key_path(app)?;
     s.ssh_key_path = if k.exists() { k.display().to_string() } else { String::new() };
     s.unifi_password = unifi_password();
@@ -203,7 +206,7 @@ async fn run_scan(app: AppHandle, busy: State<'_, Busy>) -> Result<ScanReport, S
     let s = load_settings(&app);
     let result = tauri::async_runtime::spawn_blocking(move || -> Result<ScanReport, String> {
         let s = s?;
-        let nip = sys::resolve_ipv4(&s.neptune_host).ok_or("Neptune's address is not set or cannot be resolved")?;
+        let nip = sys::resolve_ipv4(&s.neptune_host).ok_or("Could not find Neptune on the network. Check the address in Settings.")?;
         let l = link::detect(&nip)?;
         let u = if s.unifi_ready() {
             unifi::Unifi::login(&s).ok().and_then(|c| {

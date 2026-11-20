@@ -1,6 +1,6 @@
 [package]
 name = "tph-netcheck"
-version = "0.1.0"
+version = "0.1.1"
 description = "TPH Net Check: finds out why Neptune feels slow"
 authors = ["The Picture House"]
 edition = "2021"

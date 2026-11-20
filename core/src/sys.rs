@@ -42,15 +42,42 @@ pub fn os_name() -> String {
     format!("{} {}", std::env::consts::OS, std::env::consts::ARCH)
 }
 
-/// Turns a host name into an IPv4 address string.
+/// Turns a host name into an IPv4 address string. A bare name such as
+/// "Neptune" is tried as given, then as "Neptune.local", which is how a
+/// Synology announces itself on the network over Bonjour.
 pub fn resolve_ipv4(host: &str) -> Option<String> {
-    use std::net::ToSocketAddrs;
+    let host = host.trim();
+    if host.is_empty() {
+        return None;
+    }
     if host.parse::<std::net::Ipv4Addr>().is_ok() {
         return Some(host.to_string());
     }
-    (host, 445)
+    let mut names = vec![host.to_string()];
+    if !host.contains('.') {
+        names.push(format!("{host}.local"));
+    }
+    names.iter().find_map(|n| lookup(n))
+}
+
+fn lookup(name: &str) -> Option<String> {
+    use std::net::ToSocketAddrs;
+    (name, 445)
         .to_socket_addrs()
         .ok()?
         .find(|a| a.is_ipv4())
         .map(|a| a.ip().to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn resolves() {
+        assert_eq!(resolve_ipv4(""), None);
+        assert_eq!(resolve_ipv4(" 192.168.10.5 ").as_deref(), Some("192.168.10.5"));
+        assert_eq!(resolve_ipv4("localhost").as_deref(), Some("127.0.0.1"));
+        assert_eq!(resolve_ipv4("no-such-host-tph-netcheck"), None);
+    }
 }
